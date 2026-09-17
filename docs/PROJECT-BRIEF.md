@@ -8,7 +8,7 @@ It should help the owner keep an accurate inventory of pipes and cellared tobacc
 
 ## Intended user
 
-Pipestry is being designed for a single owner. Multi-user support is not currently a product goal.
+Pipestry is being designed first as a personal application for Joey. Multi-user support is not part of the initial scope, but product and data-model decisions should avoid unnecessarily preventing support for independent additional users later.
 
 The application will be used primarily from a phone while smoking and secondarily from a laptop for collection and cellar management. A browser-based, always-online application is acceptable.
 
@@ -40,7 +40,21 @@ More advanced history views, pairing analysis, dedication reporting, and other r
 
 ## Access and authentication
 
-Pipestry does not need a custom user-account or password-management system. Since it is intended for one owner, authentication should remain lightweight. Signing in with the owner's Google account is acceptable.
+The initial version should use Google sign-in only.
+
+Pipestry should not implement native password storage, password-reset or forgot-password flows, or password-oriented administrative account management for the initial version.
+
+The application remains personal-first, while leaving open the possibility of supporting independent additional users later.
+
+## Record lifecycle and historical integrity
+
+Records such as pipes and blends should use soft deletion rather than being physically removed by default.
+
+Historical records must remain intelligible after a related record is soft-deleted. For example, an existing smoking session should continue to show the pipe and blend it references even if either has later been marked deleted or archived.
+
+Hard deletion must not be allowed when it would break historical relationships or otherwise create orphaned dependent records.
+
+The exact user-facing distinction between deleted and archived states can be refined as the relevant workflows are defined.
 
 ## Legacy data migration
 
@@ -53,13 +67,22 @@ The available legacy data may come from more than one source:
 
 Records and primary keys may not align cleanly between those sources. Legacy migration should therefore be treated as a separate workstream that includes source assessment, matching/reconciliation, transformation, validation, and import into the new relational model.
 
+Because Embers was a single-user system, its migrated domain records should be assigned to Joey's Pipestry account if the replacement model includes explicit ownership.
+
 ## Current boundaries
 
-- Single-owner application
+- Personal-first application for Joey; multi-user support is deferred, not ruled out
 - Browser-based access from phone and laptop
 - Always-online operation is acceptable
 - Relational data model
-- Lightweight Google-based authentication
+- Google-only authentication for the initial version
 - Legacy data migration is required
+- Historical relationships must survive soft deletion of referenced records
 
-Detailed functional requirements, data-model design, reporting requirements, architecture, and implementation planning will be defined separately as the product is developed.
+Detailed functional requirements, data-model design, reporting requirements, architecture, and implementation planning will be defined as the product is developed.
+
+## Current product-definition direction
+
+Audience/ownership and record-deletion semantics have been discussed and agreed at the product level.
+
+The next unresolved product decision to work through is cellar inventory semantics: whether a smoking session reduces inventory, and if so, how consumption should be represented.
