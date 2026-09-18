@@ -163,15 +163,21 @@ The existing lifecycle meanings carry forward:
 | 10 | Shipped | Ordered and in transit; not yet in the cellar |
 | 20 | Cellared | On hand and unopened |
 | 30 | Open | Opened and available for smoking |
-| 40 | Archived | Contents have been exhausted; retained for history |
+| 40 | Archived | No usable tobacco remains in the item; retained for history |
 
 A received date is not required. Moving an item from Shipped to Cellared is sufficient to represent receipt.
 
+Moving an item to Archived must atomically set its inventory status to Archived and its on-hand quantity to zero.
+
 ### Quantity semantics
 
-Quantity represents the nominal contents of the cellar item rather than a running consumption counter.
+While a cellar item is Shipped, Cellared, or Open, quantity represents the item's nominal contents rather than a running consumption counter.
 
 Recording smoking sessions does not reduce the quantity. Quantity is not automatically decremented as tobacco is smoked.
+
+When a cellar item is archived, its on-hand quantity is set to zero. Archiving represents that no usable tobacco from that physical holding remains, whether because it was fully consumed, discarded, or otherwise removed from the cellar.
+
+Archiving does not remove the cellar item record and does not alter historical sessions that reference it. Those sessions continue to identify the same cellar item and blend even though the item's current quantity is zero and its status is Archived.
 
 ### Aging semantics
 
@@ -319,7 +325,7 @@ The specific visualization (chart, table, or other presentation) is a UX decisio
 
 The application should support:
 
-- Cellar stock totals
+- Cellar stock totals based on current on-hand quantities, with archived items contributing zero
 - Inventory snapshots
 - Counts of pipes by lifecycle/status where useful
 - Counts of cellar items by relevant lifecycle/status
