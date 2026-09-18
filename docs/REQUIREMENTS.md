@@ -396,7 +396,7 @@ The legacy database script has now been reviewed directly. It verifies the datab
 
 Exact legacy constants are evidence rather than requirements unless separately agreed. For example, some procedures use fixed default time windows or sample thresholds that should be made explicit and evaluated during implementation design.
 
-The remaining source-verification need is primarily application-side behavior and any calculations performed outside the database. Pipestry may intentionally modernize legacy calculations when the old behavior is undesirable, but such changes should be explicit.
+The legacy application behavior audit has also been reviewed and has supplied the application-side calculations and defaults retained in this document. Any future source lookup should be targeted to a specific ambiguity. Pipestry may intentionally modernize legacy calculations when the old behavior is undesirable, but such changes should be explicit.
 
 ## List, detail, filtering, and mobile interaction requirements
 
@@ -460,7 +460,7 @@ The agreed logical model includes these relationships:
 | Pipe -> Session | One pipe can appear in many sessions |
 | Cellar Item -> Session | One cellar item can appear in many sessions |
 
-Supplies are part of the functional domain, but their final physical ownership/cardinality model should wait until the legacy source verification and implementation design.
+Supplies are part of the functional domain, but their final physical ownership/cardinality model should be decided during physical schema and implementation design.
 
 This is a logical domain model, not yet a physical database schema or API contract.
 
@@ -505,19 +505,17 @@ Migration should:
 - Compare a small agreed sample of legacy and replacement reports after import where those reports are retained.
 - Treat differences as items to investigate rather than silently accept.
 
-## Remaining legacy-source verification
+## Legacy-source verification status
 
 The current requirements incorporate the known behavior recovered from:
 
 - Direct review of the legacy Embers database schema, stored procedures, views, and functions
-- Codegen analysis of the legacy application structure and behavior
-- Joey's direct decisions about which legacy capabilities to retain or change
+- A focused Codegen behavior audit of the legacy application source
+- Joey's explicit decisions about which legacy capabilities to retain, change, or remove
 
-The database-side verification pass is complete for the supplied schema script.
+The broad legacy verification pass is complete for the supplied materials. Any future source inspection should be targeted only at a specific unresolved or ambiguous behavior rather than repeating a general audit.
 
-The legacy application source has been reviewed through a focused Codegen behavior audit. Material application-side findings and Joey's resulting product decisions are being incorporated into this document.
-
-Any remaining source inspection should now be targeted only at unresolved or ambiguous behavior rather than repeating a broad audit. The legacy implementation remains evidence, not the specification.
+The legacy implementation remains evidence, not the specification.
 
 ## Implementation details intentionally deferred
 
@@ -527,7 +525,7 @@ The following are not yet fixed by this requirements document:
 - Physical database schema, keys, indexes, and constraints
 - API shape and DTO definitions
 - Detailed screen layouts and visual design
-- Exact formulas and thresholds for reports that still require legacy-source verification
+- Exact formulas, thresholds, and presentation details not already fixed by the requirements
 - Detailed ETL mappings and reconciliation procedures
 - Exact soft-delete recovery/audit UX
 
