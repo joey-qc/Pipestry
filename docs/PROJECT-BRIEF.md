@@ -70,7 +70,7 @@ The application remains personal-first, while leaving open the possibility of su
 
 Records should use explicit lifecycle status or soft deletion where appropriate rather than being physically removed by default.
 
-Historical records must remain intelligible after a related record is removed from active use. For example, an existing smoking session should continue to show the pipe and cellar item it references even if the pipe is later removed or the cellar item is archived.
+Historical records must remain intelligible after a related record is removed from active use. For example, an existing smoking session should continue to show the pipe and cellar item it references even if the pipe is later removed or the cellar item is archived. Archiving a cellar item means no usable tobacco remains: its status becomes Archived and its on-hand quantity becomes zero, while its historical session relationships remain intact.
 
 Sessions may be logically/soft deleted when entered in error or otherwise no longer wanted. Hard deletion must not be allowed when it would break historical relationships or create orphaned dependent records.
 
