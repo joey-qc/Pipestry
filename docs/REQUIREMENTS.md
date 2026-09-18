@@ -280,7 +280,7 @@ This allows break-in sessions to be recorded without penalizing the long-term fu
 Pipestry should preserve the useful Embers defaults unless a later workflow decision explicitly changes them:
 
 - New cellar inventory: Cellared status, 50 grams, tin/cellar date set to the current date/time, grams as the input unit, and the legacy default packaging value.
-- New sessions: date/time set to now and scores initially N/A unless explicitly scored; Break-in sessions default both scores to N/A.
+- New sessions: date/time set to now; the retained Function and Flavor choices are N/A and 1 through 4. When Break-in is selected, both scores default to N/A.
 - New maintenance entries: date/time set to now, pre-associated with the pipe from which the workflow was opened, and the legacy default maintenance action.
 
 Legacy numeric IDs may be mapped to the corresponding replacement reference records rather than treated as implementation requirements.
