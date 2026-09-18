@@ -2,11 +2,11 @@
 
 ## Purpose
 
-This document captures the agreed functional and domain requirements for Pipestry at a level suitable for guiding data-model, architecture, and implementation work.
+This document is the durable source for the agreed functional and domain requirements for Pipestry. It is intended to be comprehensive enough to guide data-model, architecture, UX, migration, and implementation planning.
 
-It complements `docs/PROJECT-BRIEF.md`. The project brief remains the high-level source for product intent, boundaries, and direction; this document is the durable source for the detailed behavior and domain model agreed so far.
+It complements `docs/PROJECT-BRIEF.md`. The project brief remains the high-level source for product intent, boundaries, and direction; this document records the detailed behavior and domain model agreed so far.
 
-The legacy Embers database is evidence about the prior system. Pipestry intentionally carries forward the parts of that domain model that remain useful, while modernizing structures where explicitly agreed.
+The legacy Embers database and application are evidence about the prior system, not automatic requirements for Pipestry. Where useful legacy behavior has been explicitly retained, it is recorded here as a Pipestry requirement. Known legacy behaviors not yet verified in source code are identified as such rather than silently assumed.
 
 ## Core domain terminology
 
@@ -16,8 +16,10 @@ Pipestry distinguishes between:
 - **Cellar item**: one physically distinct owned container or holding of a blend.
 - **Pipe**: one physical tobacco pipe in the collection.
 - **Session**: one smoking/tasting event using one pipe and one specific cellar item.
+- **Maintenance entry**: one dated maintenance action performed on a pipe.
+- **Supply**: a consumable support item tracked for on-hand quantity and projection purposes; the confirmed legacy supply is pipe-cleaner packs.
 
-A blend can therefore exist without being owned, and multiple cellar items can reference the same blend while retaining their own dates, packaging, status, and age information.
+A blend can exist without being owned, and multiple cellar items can reference the same blend while retaining their own dates, packaging, status, and age information.
 
 ## Pipe collection
 
@@ -64,7 +66,19 @@ Changing a pipe to Removed must not invalidate or erase historical sessions that
 
 ### Pipe maintenance
 
-Pipe maintenance history carries forward as part of the pipe domain. A maintenance entry associates a pipe with a maintenance action, date/time, and optional note.
+Pipe maintenance history carries forward as part of the pipe domain.
+
+A maintenance entry associates a pipe with:
+
+- Maintenance action
+- Date/time
+- Optional note
+
+The application must expose maintenance history for a pipe and support creating and editing maintenance entries.
+
+The application must also provide maintenance-derived context, including the number of smoking sessions since the pipe's most recent cleaning/maintenance event where applicable. This information is intended to help identify when a pipe may warrant attention.
+
+The exact legacy calculation rules for maintenance snapshots and "sessions since cleaning" should be verified against the legacy source before implementation.
 
 ## Blend catalog
 
@@ -111,6 +125,14 @@ A blend can be commercially available in multiple packaging formats, and a packa
 This is a many-to-many membership relationship. It describes packaging formats in which the blend is available generally; it is separate from the packaging of a specific owned cellar item.
 
 The legacy Embers JSON fields used for blend ingredients, flavorings, and packaging availability are replaced by these explicit relationships.
+
+### Tobacco Reviews reference data
+
+Tobacco Reviews information is retained as stored reference information associated with a blend.
+
+The current requirement is to store and display the known Tobacco Reviews identifier, rating, and URL where available. No live import, synchronization, scraping, or other third-party integration is required by the current product definition.
+
+If a live Tobacco Reviews integration is desired later, it should be treated as a separate requirement and evaluated independently.
 
 ## Cellar inventory
 
@@ -176,6 +198,14 @@ Each session carries forward the useful Embers session information:
 
 A session references the specific cellar item used, not only the master blend. This preserves the association with that holding's packaging, tin/cellar date, opened date, and age context.
 
+### Session lifecycle
+
+The application must support creating, viewing, and editing sessions.
+
+Sessions may also be deleted when entered in error or otherwise no longer wanted. Session deletion should be implemented as a logical/soft deletion rather than physical removal so the record can be retained without risking broken historical relationships.
+
+The exact recovery, audit, and default-visibility behavior for soft-deleted sessions can be defined during implementation design.
+
 ### New-session selection rules
 
 When creating a new session:
@@ -186,9 +216,104 @@ When creating a new session:
 
 These restrictions apply to creation of new sessions. Historical sessions remain valid and intelligible if a referenced cellar item is later Archived or a referenced pipe is later Removed.
 
+### Session history views
+
+Sessions must be viewable:
+
+- Globally
+- For a specific pipe
+- For a specific blend
+- For a specific pipe/blend pairing where useful
+
+Session history is a primary source for maintenance context, usage history, ratings, pairing analysis, and other reports.
+
+## Supplies
+
+Pipestry should retain the useful Embers supplies capability.
+
+The confirmed legacy supply is pipe-cleaner packs. The application should allow the owner to track the number of pipe-cleaner packs on hand and provide projections related to expected need, cost, and depletion/end date.
+
+The exact fields and formulas used by the legacy supplies calculations have not yet been verified from source code and should be confirmed before physical schema or implementation logic is finalized.
+
+## Reporting and derived analysis
+
+Reporting and derived analysis are part of the intended Pipestry product, even if individual reports are implemented after the core CRUD workflows.
+
+Reports must be calculated from canonical persisted domain records rather than stored as independent report-result data.
+
+The retained legacy reporting capabilities include the following.
+
+### Pipe and blend pairing analysis
+
+The application should identify frequently or successfully used pipe/blend pairings and support a configurable or specified minimum-session threshold where appropriate.
+
+Pairing views should be able to use session history and the recorded function/flavor scores.
+
+### Pipe history and dedication analysis
+
+For a pipe, the application should support history and analysis by:
+
+- Individual blend
+- Blend type
+- Blend type category
+
+The application should support averages of relevant session scores where meaningful.
+
+Pipe dedication is a derived analysis based on smoking history by tobacco category/type/blend; it is not a manually maintained attribute of the pipe.
+
+### Blend usage and rating analysis
+
+The application should support:
+
+- Blend usage history
+- Flavor-score/rating analysis
+- Pipe-pairing history for a blend
+- Acquisition/usage reporting where supported by the canonical data
+
+### Cellar and inventory reporting
+
+The application should support:
+
+- Cellar stock totals
+- Inventory snapshots
+- Cellar projections using user assumptions such as bowls per day and grams per bowl where applicable
+
+Because Pipestry does not automatically decrement cellar quantity per smoking session, any projection logic must be designed consistently with the agreed nominal-quantity semantics rather than silently reintroducing automatic per-session consumption.
+
+### Maintenance reporting
+
+The application should support maintenance snapshots and sessions-since-cleaning context for pipes.
+
+### Supply projections
+
+The application should support the pipe-cleaner supply projections described in the Supplies section.
+
+### Calculation verification
+
+The Codegen legacy audit confirms the existence and general purpose of these reports, but not every exact formula, threshold, time-window rule, or edge case.
+
+Before report calculations are implemented, the relevant legacy stored procedures/views and application source should be reviewed once to recover useful calculation details. Pipestry may intentionally modernize those calculations when the legacy behavior is undesirable, but such changes should be explicit.
+
+## List, detail, filtering, and mobile interaction requirements
+
+Pipestry will be used primarily from a phone and secondarily from a laptop. Core operational screens must therefore be responsive and practical on small screens.
+
+The retained useful legacy interaction behavior includes:
+
+- Filterable and sortable pipe lists
+- Filterable and sortable blend/cellar lists
+- Compact/mobile-aware list presentation
+- Pipe detail views that expose relevant session, blend-history, maintenance, and break-in context
+- Blend detail views that expose usage history and pipe-pairing history
+- Useful list-filter state persistence where it reduces repetitive re-entry during normal use
+
+The exact visual layout, component library, navigation model, and persistence mechanism are implementation decisions, but the capabilities above are functional expectations.
+
+The precise meaning and presentation of legacy "break-in" context should be verified from the source code before implementation.
+
 ## Historical integrity and record lifecycle
 
-Pipestry must preserve historical relationships among sessions, pipes, cellar items, blends, and reference data.
+Pipestry must preserve historical relationships among sessions, pipes, cellar items, blends, maintenance records, and reference data.
 
 Operational status changes such as Removed for a pipe or Archived for a cellar item must not destroy historical records.
 
@@ -198,7 +323,7 @@ Domain records should use soft deletion or lifecycle status where needed rather 
 
 Existing Embers domain lookup/reference data relevant to the retained Pipestry model should be used as source seed data where practical.
 
-This includes the established lookup domains for pipes, blends, cellar inventory, sessions, manufacturers, countries, ingredients, flavorings, packaging, and related classifications.
+This includes the established lookup domains for pipes, blends, cellar inventory, sessions, manufacturers, countries, ingredients, flavorings, packaging, maintenance, and related classifications.
 
 Legacy identifiers may be preserved where they are useful for migration continuity, including the explicitly agreed pipe and cellar status identifiers above.
 
@@ -224,6 +349,8 @@ The agreed logical model includes these relationships:
 | Cellar Item -> Session | One cellar item can appear in many sessions |
 | Session Helper -> Session | One helper value can appear in many sessions |
 
+Supplies are part of the functional domain, but their final physical ownership/cardinality model should wait until the legacy source verification and implementation design.
+
 This is a logical domain model, not yet a physical database schema or API contract.
 
 ## Access and authentication
@@ -232,24 +359,52 @@ The initial version uses Google sign-in only.
 
 The application is personal-first for Joey. Multi-user support is not part of the initial scope, but implementation choices should avoid unnecessarily preventing independent users from being supported later.
 
-## Initial functional scope
+Before multi-user access is offered, domain ownership rules must be explicit and enforced for user-owned records.
 
-The first usable version must support management of:
+## Functional scope and implementation phasing
+
+The intended Pipestry product includes:
 
 - Pipes and pipe maintenance history
 - Master tobacco blends and their classifications/relationships
 - Cellar inventory items and their lifecycle
 - Smoking sessions
+- Supplies tracking
+- History/detail views
+- Filtering and sorting
+- Mobile-aware operational UX
+- Maintenance-derived context
+- Pairing, usage, dedication, cellar, inventory, and supply reporting
 
-The application must support creating, viewing, editing, and lifecycle removal/archive behavior appropriate to these records while preserving historical integrity.
+Implementation may be phased. Phasing a capability into a later milestone does not remove it from the product requirements.
 
-Advanced pairing analysis, dedication reporting, richer history/reporting, and similar analytics can follow after the core records and relationships are established.
+The first usable version must at minimum establish the canonical records and relationships needed by later reports so that subsequent features do not require reworking the foundational model.
 
 ## Legacy migration
 
 Legacy Embers data must be migrated through a deliberate ETL and reconciliation process as described in `docs/PROJECT-BRIEF.md`.
 
-The legacy schema and seed/reference data are useful inputs to the new logical model, but migration mapping, reconciliation rules, and physical import mechanics remain a separate workstream.
+The legacy schema, seed/reference data, application behavior, stored procedures, and views are useful inputs to the new logical model, but migration mapping, reconciliation rules, and physical import mechanics remain a separate workstream.
+
+Migration should:
+
+- Preserve or map legacy primary keys sufficiently to reconcile source and destination records.
+- Reconcile counts and relevant sums for major canonical entities.
+- Validate migrated sessions and maintenance entries against valid referenced records.
+- Compare a small agreed sample of legacy and replacement reports after import where those reports are retained.
+- Treat differences as items to investigate rather than silently accept.
+
+## Remaining legacy-source verification
+
+The current requirements incorporate the known behavior recovered from:
+
+- The legacy Embers database schema
+- Codegen analysis of the legacy application structure and behavior
+- Joey's direct decisions about which legacy capabilities to retain or change
+
+A one-time review of the legacy application source, stored procedures, and views is still recommended before final architecture and implementation planning. Its purpose is to find material behavior not yet documented and to recover exact formulas or edge cases where useful.
+
+That verification pass should update this document only when it identifies a durable product requirement or clarifies an existing one. The legacy implementation should not become the specification by default.
 
 ## Implementation details intentionally deferred
 
@@ -258,8 +413,9 @@ The following are not yet fixed by this requirements document:
 - Application technology stack and hosting architecture
 - Physical database schema, keys, indexes, and constraints
 - API shape and DTO definitions
-- Detailed screen layouts and interaction design
-- Advanced reporting and analytics specifications
+- Detailed screen layouts and visual design
+- Exact formulas and thresholds for reports that still require legacy-source verification
 - Detailed ETL mappings and reconciliation procedures
+- Exact soft-delete recovery/audit UX
 
 Those decisions should be made from the requirements and logical model above rather than by automatically reproducing the legacy Embers implementation.
