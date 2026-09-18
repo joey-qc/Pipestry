@@ -12,7 +12,9 @@ It should help the owner keep an accurate inventory of pipes and cellared tobacc
 
 ## Intended user
 
-Pipestry is being designed first as a personal application for Joey. Multi-user support is not part of the initial scope, but product and data-model decisions should avoid unnecessarily preventing support for independent additional users later.
+Pipestry is a single-user personal application for Joey. The application data belongs to this Pipestry installation as a whole; the domain model does not need per-record user ownership or multi-user data partitioning.
+
+Authentication exists to protect access to the application, not to scope pipes, blends, cellar items, sessions, manufacturers, reference data, or other domain records by user.
 
 The application will be used primarily from a phone while smoking and secondarily from a laptop for collection and cellar management. A browser-based, always-online application is acceptable.
 
@@ -60,11 +62,11 @@ The foundational implementation must establish the canonical records and relatio
 
 ## Access and authentication
 
-The initial version should use Google sign-in only.
+Pipestry should use Google sign-in to protect access to the application.
 
-Pipestry should not implement native password storage, password-reset or forgot-password flows, or password-oriented administrative account management for the initial version.
+Pipestry should not implement native password storage, password-reset or forgot-password flows, or password-oriented administrative account management.
 
-The application remains personal-first, while leaving open the possibility of supporting independent additional users later.
+The authenticated identity is an access-control concern only. A minimal local user/authentication record may be used as needed for login and display identity, but domain and reference records are not owned or partitioned by that user record.
 
 ## Record lifecycle and historical integrity
 
@@ -87,7 +89,7 @@ The available legacy data may come from more than one source:
 
 Records and primary keys may not align cleanly between those sources. Legacy migration should therefore be treated as a separate workstream that includes source assessment, matching/reconciliation, transformation, validation, and import into the new relational model.
 
-Because Embers was a single-user system, its migrated domain records should be assigned to Joey's Pipestry account if the replacement model includes explicit ownership.
+Because Pipestry remains a single-user application, migrated Embers domain records do not require assignment to a user/account foreign key. Authentication and migrated domain data remain separate concerns.
 
 The Embers schema, application, and data are evidence about the prior system, not automatic requirements for Pipestry. Agreed carry-forward behavior is recorded in `docs/REQUIREMENTS.md`.
 
@@ -101,11 +103,12 @@ Any future source inspection should be targeted to a specific unresolved questio
 
 ## Current boundaries
 
-- Personal-first application for Joey; multi-user support is deferred, not ruled out
+- Single-user personal application for Joey
+- Authentication protects application access; domain/reference records are not partitioned by user
 - Browser-based access from phone and laptop
 - Always-online operation is acceptable
 - Relational data model
-- Google-only authentication for the initial version
+- Google authentication
 - Legacy data migration is required
 - Historical relationships must survive lifecycle changes and soft deletion
 - Retained reporting and history features are product requirements even if implementation is phased
