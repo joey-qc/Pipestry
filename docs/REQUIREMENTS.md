@@ -86,7 +86,7 @@ These calculations are derived from canonical maintenance and session records ra
 
 ## Blend catalog
 
-The blend catalog is the master reference collection of tobacco blends. It is separate from owned cellar inventory.
+The blend catalog is the application's master reference collection of tobacco blends. It is separate from owned cellar inventory and is not partitioned by user.
 
 A blend carries forward the useful Embers attributes:
 
@@ -460,17 +460,21 @@ The agreed logical model includes these relationships:
 | Pipe -> Session | One pipe can appear in many sessions |
 | Cellar Item -> Session | One cellar item can appear in many sessions |
 
-Supplies are part of the functional domain, but their final physical ownership/cardinality model should be decided during physical schema and implementation design.
+Supplies are part of the functional domain, but their final physical storage/cardinality model should be decided during physical schema and implementation design.
 
 This is a logical domain model, not yet a physical database schema or API contract.
 
 ## Access and authentication
 
-The initial version uses Google sign-in only.
+Pipestry is a single-user personal application for Joey.
 
-The application is personal-first for Joey. Multi-user support is not part of the initial scope, but implementation choices should avoid unnecessarily preventing independent users from being supported later.
+Google sign-in is used to protect access to the application. Authentication is a security boundary, not a domain-ownership model.
 
-Before multi-user access is offered, domain ownership rules must be explicit and enforced for user-owned records.
+A minimal local user/authentication record may be retained as needed to associate the authorized Google identity with Pipestry and to provide a local display name or identifier. That record does not imply ownership of domain data.
+
+Pipes, blends, cellar items, sessions, maintenance entries, supplies, manufacturers, countries, classifications, lookup/reference data, and other application records do not require a UserId or equivalent ownership foreign key. The fact that the data belongs to Joey is implicit in this single-user Pipestry installation.
+
+Multi-user data partitioning is not a current requirement. If Pipestry is ever redesigned as a shared multi-user service, ownership and tenant boundaries would be a separate future architectural change rather than a constraint on the current schema.
 
 ## Functional scope and implementation phasing
 
@@ -496,6 +500,8 @@ The first usable version must at minimum establish the canonical records and rel
 Legacy Embers data must be migrated through a deliberate ETL and reconciliation process as described in `docs/PROJECT-BRIEF.md`.
 
 The legacy schema, seed/reference data, application behavior, stored procedures, and views are useful inputs to the new logical model, but migration mapping, reconciliation rules, and physical import mechanics remain a separate workstream.
+
+Because Pipestry is single-user and domain records are not user-owned, the ETL does not need to discover, inject, or map a Pipestry UserId onto imported domain/reference records.
 
 Migration should:
 
