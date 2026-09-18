@@ -76,9 +76,13 @@ A maintenance entry associates a pipe with:
 
 The application must expose maintenance history for a pipe and support creating and editing maintenance entries.
 
-The application must also provide maintenance-derived context, including the number of smoking sessions since the pipe's most recent cleaning/maintenance event where applicable. This information is intended to help identify when a pipe may warrant attention.
+The application must also provide maintenance-derived context that distinguishes cleaning-specific history from general maintenance history.
 
-The exact legacy calculation rules for maintenance snapshots and "sessions since cleaning" should be verified against the legacy source before implementation.
+For cleaning context, the application must provide the number of smoking sessions since the pipe's most recent cleaning. If no cleaning has been recorded, the pipe's acquisition date is the legacy baseline for this calculation.
+
+For general maintenance context, the application should provide the most recent maintenance date together with sessions and elapsed days since that maintenance event.
+
+These calculations are derived from canonical maintenance and session records rather than stored as independent report data.
 
 ## Blend catalog
 
@@ -227,13 +231,21 @@ Sessions must be viewable:
 
 Session history is a primary source for maintenance context, usage history, ratings, pairing analysis, and other reports.
 
+### Break-in sessions
+
+Pipestry must retain the useful distinction between ordinary scored sessions and pipe break-in sessions.
+
+In Embers, a session with both function score and flavor score equal to zero represented a break-in bowl. Break-in sessions were displayed as part of pipe history but omitted from score-based averages, pairing rankings, dedication analysis, and flavor rankings.
+
+Pipestry should preserve that functional distinction. The replacement implementation does not need to encode the distinction by using numeric zero values if a clearer explicit representation is chosen.
+
 ## Supplies
 
 Pipestry should retain the useful Embers supplies capability.
 
-The confirmed legacy supply is pipe-cleaner packs. The application should allow the owner to track the number of pipe-cleaner packs on hand and provide projections related to expected need, cost, and depletion/end date.
+The confirmed legacy supply is 100-count pipe-cleaner packs. The application should allow the owner to track the number of pipe-cleaner packs on hand and provide projections related to expected need, cost, and depletion/end date.
 
-The exact fields and formulas used by the legacy supplies calculations have not yet been verified from source code and should be confirmed before physical schema or implementation logic is finalized.
+The legacy database stores the packs-on-hand value directly. The projection formulas are not present in the database script and should be recovered from the legacy application source before implementation logic is finalized.
 
 ## Reporting and derived analysis
 
@@ -247,7 +259,15 @@ The retained legacy reporting capabilities include the following.
 
 The application should identify frequently or successfully used pipe/blend pairings and support a configurable or specified minimum-session threshold where appropriate.
 
-Pairing views should be able to use session history and the recorded function/flavor scores.
+Pairing analysis uses session count together with average function and flavor scores. Break-in sessions are excluded from score-based pairing analysis.
+
+### Pipe and blend session summaries
+
+For a pipe, the application should support a session summary that includes session count, most recent session date, average function score, and average flavor score over an appropriate history window.
+
+For a blend, the application should support a session summary that includes session count, most recent session date, average function score, and average flavor score.
+
+History time windows should be explicit to the user where a report is time-bounded rather than being hidden implementation constants.
 
 ### Pipe history and dedication analysis
 
@@ -268,7 +288,32 @@ The application should support:
 - Blend usage history
 - Flavor-score/rating analysis
 - Pipe-pairing history for a blend
+- Top blends by usage
+- Top blends by average flavor score, using a minimum-session sample threshold so very small samples do not dominate rankings
 - Acquisition/usage reporting where supported by the canonical data
+
+Break-in sessions are excluded from score-based flavor rankings.
+
+### Collection composition reporting
+
+The retained legacy reporting includes summary/distribution views for the collection and cellar.
+
+Pipe collection summaries should support grouping or counting by useful characteristics including:
+
+- Bent versus straight
+- Manufacturer country
+- Pipe manufacturer
+- Pipe shape
+- Usage/session count
+
+Cellar summaries should support grouping or counting by:
+
+- Blend type category
+- Blend cut
+- Blend manufacturer
+- Blend type
+
+The specific visualization (chart, table, or other presentation) is a UX decision.
 
 ### Cellar and inventory reporting
 
@@ -276,7 +321,12 @@ The application should support:
 
 - Cellar stock totals
 - Inventory snapshots
+- Counts of pipes by lifecycle/status where useful
+- Counts of cellar items by relevant lifecycle/status
+- Tobacco stock quantities in practical units such as grams, ounces, and pounds
+- Pipe-cleaner packs on hand as part of the inventory snapshot
 - Cellar projections using user assumptions such as bowls per day and grams per bowl where applicable
+- Recently acquired pipes as a useful collection-history view
 
 Because Pipestry does not automatically decrement cellar quantity per smoking session, any projection logic must be designed consistently with the agreed nominal-quantity semantics rather than silently reintroducing automatic per-session consumption.
 
@@ -290,9 +340,11 @@ The application should support the pipe-cleaner supply projections described in 
 
 ### Calculation verification
 
-The Codegen legacy audit confirms the existence and general purpose of these reports, but not every exact formula, threshold, time-window rule, or edge case.
+The legacy database script has now been reviewed directly. It verifies the database-side existence and general calculations for the retained reports above, including pairing thresholds, pipe/blend histories, dedication aggregates, inventory snapshots, cleaning/maintenance calculations, collection composition summaries, top-blend reports, and session summaries.
 
-Before report calculations are implemented, the relevant legacy stored procedures/views and application source should be reviewed once to recover useful calculation details. Pipestry may intentionally modernize those calculations when the legacy behavior is undesirable, but such changes should be explicit.
+Exact legacy constants are evidence rather than requirements unless separately agreed. For example, some procedures use fixed default time windows or sample thresholds that should be made explicit and evaluated during implementation design.
+
+The remaining source-verification need is primarily application-side behavior and any calculations performed outside the database. Pipestry may intentionally modernize legacy calculations when the old behavior is undesirable, but such changes should be explicit.
 
 ## List, detail, filtering, and mobile interaction requirements
 
@@ -308,8 +360,6 @@ The retained useful legacy interaction behavior includes:
 - Useful list-filter state persistence where it reduces repetitive re-entry during normal use
 
 The exact visual layout, component library, navigation model, and persistence mechanism are implementation decisions, but the capabilities above are functional expectations.
-
-The precise meaning and presentation of legacy "break-in" context should be verified from the source code before implementation.
 
 ## Historical integrity and record lifecycle
 
@@ -398,11 +448,13 @@ Migration should:
 
 The current requirements incorporate the known behavior recovered from:
 
-- The legacy Embers database schema
+- Direct review of the legacy Embers database schema, stored procedures, views, and functions
 - Codegen analysis of the legacy application structure and behavior
 - Joey's direct decisions about which legacy capabilities to retain or change
 
-A one-time review of the legacy application source, stored procedures, and views is still recommended before final architecture and implementation planning. Its purpose is to find material behavior not yet documented and to recover exact formulas or edge cases where useful.
+The database-side verification pass is complete for the supplied schema script.
+
+A one-time review of the legacy application source remains recommended before final architecture and implementation planning. Its purpose is to identify material UI, validation, workflow, defaulting, navigation, or client/API behavior not represented in the database and to recover calculations performed outside SQL.
 
 That verification pass should update this document only when it identifies a durable product requirement or clarifies an existing one. The legacy implementation should not become the specification by default.
 
