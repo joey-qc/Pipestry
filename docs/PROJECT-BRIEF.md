@@ -93,13 +93,13 @@ The Embers schema, application, and data are evidence about the prior system, no
 
 ## Legacy-source verification
 
-The current requirements now incorporate the known behavior recovered from the legacy database schema, Codegen's legacy-application discovery documents, and Joey's explicit decisions about what to retain or change.
+The legacy database-side verification pass is complete for the supplied Embers schema script. The current requirements now incorporate behavior recovered directly from its tables, stored procedures, views, and functions, together with Codegen's legacy-application discovery documents and Joey's explicit decisions about what to retain or change.
 
-Before final architecture and implementation planning, a one-time review of the legacy application source plus relevant stored procedures and views should be performed to:
+A one-time review of the legacy application source remains before final architecture and implementation planning. Its purpose is to:
 
-- Identify material behaviors not yet represented in the requirements.
-- Recover exact formulas, thresholds, and edge cases for retained reports where useful.
-- Confirm the meaning of legacy-derived concepts such as maintenance snapshots and break-in context.
+- Identify material UI, workflow, validation, navigation, defaulting, or client/API behaviors not represented in SQL.
+- Recover calculations performed outside the database, including remaining supply-projection behavior.
+- Confirm any application-side presentation or interpretation of retained reporting features.
 - Avoid repeatedly reintroducing legacy discovery files into future project conversations.
 
 That verification should refine the requirements only where it reveals durable product behavior worth retaining. The old implementation remains evidence, not the specification.
@@ -115,10 +115,10 @@ That verification should refine the requirements only where it reveals durable p
 - Historical relationships must survive lifecycle changes and soft deletion
 - Retained reporting and history features are product requirements even if implementation is phased
 
-Technology-stack selection, physical database design, API/DTO design, detailed visual design, exact report formulas still requiring source verification, and detailed migration mechanics remain to be defined.
+Technology-stack selection, physical database design, API/DTO design, detailed visual design, remaining application-side behavior/formulas, and detailed migration mechanics remain to be defined.
 
 ## Current product-definition direction
 
 Core domain requirements and the currently known retained Embers behavior are documented in `docs/REQUIREMENTS.md`.
 
-The next requirements activity is the one-time legacy source-code/procedure/view verification pass described above. After that, any material findings should be incorporated into the requirements before finalizing architecture, technology choices, physical schema, and implementation planning.
+The next requirements activity is the one-time legacy application source-code verification pass described above. The database schema/procedure/view/function review is complete for the supplied SQL artifact. After the application-source pass, any material findings should be incorporated into the requirements before finalizing architecture, technology choices, physical schema, and implementation planning.
