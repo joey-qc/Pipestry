@@ -113,10 +113,10 @@ Any future source inspection should be targeted to a specific unresolved questio
 - Historical relationships must survive lifecycle changes and soft deletion
 - Retained reporting and history features are product requirements even if implementation is phased
 
-Technology-stack selection, physical database design, API/DTO design, detailed visual design, and detailed migration mechanics remain to be defined.
+Technology-stack selection and hosting architecture, database-engine-specific implementation, API/DTO design, detailed visual design, and detailed migration mechanics remain to be defined.
 
 ## Current product-definition direction
 
 The current functional and domain requirements, including the retained and intentionally changed Embers behaviors reviewed to date, are documented in `docs/REQUIREMENTS.md`.
 
-The broad requirements-recovery and legacy-verification phase is complete. The next project phase is architecture and implementation design: select the technology approach, define the physical relational schema and constraints, define API/DTO boundaries where needed, and plan implementation and migration from the agreed requirements rather than from the legacy implementation.
+The broad requirements-recovery and legacy-verification phase is complete, and the relational database design is finalized in `docs/DATABASE-DESIGN.md`. The next project phase is architecture and implementation design: select the technology and hosting approach, implement the finalized relational design in the chosen database engine, define API/DTO boundaries where needed, and plan implementation and migration from the agreed requirements rather than from the legacy implementation.
