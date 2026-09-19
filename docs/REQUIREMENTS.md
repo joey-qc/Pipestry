@@ -528,7 +528,7 @@ The legacy implementation remains evidence, not the specification.
 The following are not yet fixed by this requirements document:
 
 - Application technology stack and hosting architecture
-- Physical database schema, keys, indexes, and constraints
+- Database-engine-specific types, DDL, and migration implementation
 - API shape and DTO definitions
 - Detailed screen layouts and visual design
 - Exact formulas, thresholds, and presentation details not already fixed by the requirements
