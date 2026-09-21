@@ -4,7 +4,7 @@
 
 This document records the selected implementation technologies and related operational conventions for Pipestry.
 
-Functional and domain requirements are defined in `docs/REQUIREMENTS.md`. The relational schema is defined in `docs/DATABASE-DESIGN.md`. Application-layer structure and boundaries will be documented separately when the architecture is designed.
+Functional and domain requirements are defined in `docs/REQUIREMENTS.md`. The relational schema is defined in `docs/DATABASE-DESIGN.md`. Application-layer structure and boundaries are defined in `docs/ARCHITECTURE.md`.
 
 ## Selected stack
 
