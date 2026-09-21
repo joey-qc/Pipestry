@@ -2,7 +2,15 @@
 
 ## Startup context
 
-This brief is the entry point for Pipestry project context. After reading it, read `docs/REQUIREMENTS.md` for the current agreed functional requirements and logical domain model before making product, data-model, architecture, or implementation decisions.
+This brief is the entry point for Pipestry project context. Before making product, data-model, architecture, or implementation decisions, read the current durable project documents in this order:
+
+1. `docs/PROJECT-BRIEF.md` — product intent, boundaries, and current direction
+2. `docs/REQUIREMENTS.md` — agreed functional and domain requirements
+3. `docs/DATABASE-DESIGN.md` — finalized relational database design
+4. `docs/TECHNOLOGY-STACK.md` — selected implementation technologies and operational conventions
+5. `docs/ARCHITECTURE.md` — application structure, responsibility boundaries, and database/application interaction
+
+These documents are the authoritative durable project context. When they already contain a settled decision, do not reconstruct or reopen it from conversational memory unless a genuine conflict or implementation problem is discovered.
 
 ## Product vision
 
@@ -113,10 +121,18 @@ Any future source inspection should be targeted to a specific unresolved questio
 - Historical relationships must survive lifecycle changes and soft deletion
 - Retained reporting and history features are product requirements even if implementation is phased
 
-Technology-stack selection and hosting architecture, database-engine-specific implementation, API/DTO design, detailed visual design, and detailed migration mechanics remain to be defined.
+The technology stack, hosting approach, relational database design, and application architecture are settled in the durable documents listed in Startup context. Database-engine-specific schema implementation, detailed visual design, authentication implementation details, feature implementation, and detailed migration mechanics remain implementation work.
 
 ## Current product-definition direction
 
-The current functional and domain requirements, including the retained and intentionally changed Embers behaviors reviewed to date, are documented in `docs/REQUIREMENTS.md`.
+The current functional/domain requirements, relational database design, technology stack, and application architecture are settled and documented in the durable project documents listed in Startup context.
 
-The broad requirements-recovery and legacy-verification phase is complete, and the relational database design is finalized in `docs/DATABASE-DESIGN.md`. The next project phase is architecture and implementation design: select the technology and hosting approach, implement the finalized relational design in the chosen database engine, define API/DTO boundaries where needed, and plan implementation and migration from the agreed requirements rather than from the legacy implementation.
+The next phase is implementation design and implementation. The expected sequence is:
+
+1. Implement the finalized relational model in Drizzle/PostgreSQL.
+2. Generate and review the initial migration SQL.
+3. Define authentication implementation details from the settled Better Auth / Google-only / allowlist requirements.
+4. Establish the initial Next.js project structure and deployment configuration.
+5. Proceed into feature implementation in a sensible vertical order.
+
+Legacy Embers remains evidence for migration and targeted behavior questions, not the implementation specification.
