@@ -74,7 +74,9 @@ A maintenance entry associates a pipe with:
 - Date/time
 - Optional note
 
-The application must expose maintenance history for a pipe and support creating and editing maintenance entries.
+The application must expose maintenance history for a pipe and support creating, editing, and deleting maintenance entries.
+
+Maintenance entries entered in error may be hard deleted. They do not use the session soft-deletion model.
 
 The application must also provide maintenance-derived context that distinguishes cleaning-specific history from general maintenance history.
 
@@ -429,7 +431,7 @@ Domain records should use soft deletion or lifecycle status where needed rather 
 
 A master blend that is referenced by cellar inventory or historical sessions must not be hard-deleted; it may instead be made inactive/hidden. An unused blend entered in error may be physically deleted if nothing references it.
 
-The same principle applies to manufacturers and lookup/reference records: referenced values must not be physically deleted. Maintenance entries entered in error may be logically/soft deleted.
+The same principle applies to manufacturers and lookup/reference records: referenced values must not be physically deleted. Maintenance entries entered in error may be hard deleted because they have no dependent historical relationships that require a soft-deletion lifecycle.
 
 ## Reference and seed data
 
@@ -460,9 +462,9 @@ The agreed logical model includes these relationships:
 | Pipe -> Session | One pipe can appear in many sessions |
 | Cellar Item -> Session | One cellar item can appear in many sessions |
 
-Supplies are part of the functional domain, but their final physical storage/cardinality model should be decided during physical schema and implementation design.
+Supplies are part of the functional domain. Their physical storage model is defined in `docs/DATABASE-DESIGN.md`.
 
-This is a logical domain model, not yet a physical database schema or API contract.
+This section describes the logical domain relationships. The finalized physical relational design is defined in `docs/DATABASE-DESIGN.md`; application structure and API boundaries are defined in `docs/ARCHITECTURE.md`.
 
 ## Access and authentication
 
@@ -523,16 +525,20 @@ The broad legacy verification pass is complete for the supplied materials. Any f
 
 The legacy implementation remains evidence, not the specification.
 
-## Implementation details intentionally deferred
+## Implementation details outside this document
 
-The following are not yet fixed by this requirements document:
+This requirements document does not attempt to specify every implementation detail. Settled implementation-level decisions are recorded in the other durable project documents:
 
-- Application technology stack and hosting architecture
-- Database-engine-specific types, DDL, and migration implementation
-- API shape and DTO definitions
+- `docs/DATABASE-DESIGN.md` defines the finalized relational database design.
+- `docs/TECHNOLOGY-STACK.md` defines the selected technology stack and hosting approach.
+- `docs/ARCHITECTURE.md` defines application structure, responsibility boundaries, and the API approach.
+
+The following details remain to be resolved during implementation where needed:
+
+- PostgreSQL-specific types, DDL, and generated migration details
 - Detailed screen layouts and visual design
-- Exact formulas, thresholds, and presentation details not already fixed by the requirements
+- Presentation details not already fixed by the requirements
 - Detailed ETL mappings and reconciliation procedures
-- Exact soft-delete recovery/audit UX
+- Exact recovery, audit, and default-visibility UX for soft-deleted sessions
 
-Those decisions should be made from the requirements and logical model above rather than by automatically reproducing the legacy Embers implementation.
+These implementation decisions should remain consistent with the settled requirements and durable design documents rather than automatically reproducing the legacy Embers implementation.
