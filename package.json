@@ -1,0 +1,34 @@
+{
+  "name": "pipestry",
+  "version": "1.0.0",
+  "description": "Pipestry is the successor to the legacy Embers pipe and tobacco application.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joey-qc/Pipestry.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/joey-qc/Pipestry/issues"
+  },
+  "homepage": "https://github.com/joey-qc/Pipestry#readme",
+  "dependencies": {
+    "drizzle-orm": "^0.45.3",
+    "pg": "^8.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.2",
+    "@types/pg": "^8.23.1",
+    "drizzle-kit": "^0.31.11",
+    "typescript": "^7.0.2"
+  }
+}
