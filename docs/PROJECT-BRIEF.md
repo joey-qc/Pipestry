@@ -107,7 +107,7 @@ The broad legacy verification work is complete for the supplied materials.
 
 The database-side pass covered the Embers schema, stored procedures, views, and functions. The application-side pass used a focused Codegen behavior audit of the legacy client/API/domain source. Material behaviors recovered from those reviews, together with Joey's explicit decisions about what to retain, change, or remove, are now incorporated into `docs/REQUIREMENTS.md`.
 
-Any future source inspection should be targeted to a specific unresolved question rather than repeating a broad audit. The old implementation remains evidence, not the specification.
+Before planning or assigning implementation work for a domain area, review the relevant legacy Embers database and application material where it may contain useful behavior or domain logic. If that material has not yet been provided, ask Joey for it before designing replacement behavior. Future source inspection should remain targeted to the implementation area or unresolved question rather than repeating a broad audit. The old implementation remains evidence, not the specification.
 
 ## Current boundaries
 
