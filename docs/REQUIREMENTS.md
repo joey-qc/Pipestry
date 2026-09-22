@@ -136,7 +136,7 @@ The legacy Embers JSON fields used for blend ingredients, flavorings, and packag
 
 A blend's Pipestry rating is derived from the average qualifying Flavor score of its smoking sessions rather than maintained as a separate manual rating.
 
-The derived rating must remain correct when qualifying sessions are created, edited, restored, or deleted. The implementation may calculate it on demand or persist/cache it, provided the displayed value remains consistent with the canonical session data.
+The derived rating is persisted in `blends.rating` and must be recalculated whenever qualifying sessions are created, edited, restored, or soft deleted so it remains consistent with the canonical session data.
 
 Break-in sessions and N/A Flavor scores do not contribute to the derived blend rating.
 
@@ -202,7 +202,7 @@ When a cellar item is opened:
 - Age at open is determined from the opened date and tin/cellar date.
 - Once opened, the age-at-open value is treated as fixed historical information rather than continuing to age.
 
-Whether age at open is physically persisted or deterministically derived from immutable dates is an implementation decision; its functional meaning must remain fixed after opening.
+Age at open is persisted in `cellar_items.age_at_open_days`. It is recalculated when the item is opened or when its tin/opened dates change, and otherwise remains fixed historical information.
 
 For user-facing age and elapsed-duration text, Pipestry should preserve the legacy approximate display convention of 365-day years and 30-day months. This is presentation shorthand rather than exact calendar arithmetic.
 
@@ -285,7 +285,7 @@ Pipestry should preserve the useful Embers defaults unless a later workflow deci
 - New sessions: date/time set to now; the retained Function and Flavor choices are N/A and 1 through 4. When Break-in is selected, both scores default to N/A.
 - New maintenance entries: date/time set to now, pre-associated with the pipe from which the workflow was opened, and the legacy default maintenance action.
 
-Legacy numeric IDs may be mapped to the corresponding replacement reference records rather than treated as implementation requirements.
+Legacy numeric IDs may generally be mapped to corresponding replacement records rather than treated as implementation requirements, except where `docs/DATABASE-DESIGN.md` explicitly fixes an ID relied on by the Pipestry design.
 
 ## Supplies
 
