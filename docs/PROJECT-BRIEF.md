@@ -123,11 +123,13 @@ Any future source inspection should be targeted to a specific unresolved questio
 
 The technology stack, hosting approach, relational database design, and application architecture are settled in the durable documents listed in Startup context. Database-engine-specific schema implementation, detailed visual design, authentication implementation details, feature implementation, and detailed migration mechanics remain implementation work.
 
-## Current product-definition direction
+## Current project direction
 
 The current functional/domain requirements, relational database design, technology stack, and application architecture are settled and documented in the durable project documents listed in Startup context.
 
-The next phase is implementation design and implementation. The expected sequence is:
+The project is entering implementation. Before Step 1, establish the minimal local development tooling needed to run the TypeScript/Drizzle/Codex workflow. A local PostgreSQL installation is not required; Neon is the selected PostgreSQL environment.
+
+The expected implementation sequence is:
 
 1. Implement the finalized relational model in Drizzle/PostgreSQL.
 2. Generate and review the initial migration SQL.
