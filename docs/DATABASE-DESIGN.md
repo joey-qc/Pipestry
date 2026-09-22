@@ -234,7 +234,7 @@ The schema enforces straightforward invariants:
 - Cellar quantity is nonnegative.
 - Archived cellar items have zero quantity.
 
-Eligibility rules for creating or changing session references are enforced by application/service logic because historical sessions must remain valid after later lifecycle changes.
+Eligibility rules for creating or changing session references are enforced by server-side application logic because historical sessions must remain valid after later lifecycle changes.
 
 ## Initial indexes
 
