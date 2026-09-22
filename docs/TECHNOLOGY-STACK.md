@@ -20,7 +20,7 @@ Functional and domain requirements are defined in `docs/REQUIREMENTS.md`. The re
 
 ### Next.js version policy
 
-Use the latest patched release in the selected Next.js 16.3.x line. At the time this decision was made, the current patched release is 16.3.3.
+Use the latest patched stable release in the selected Next.js 16.3.x line.
 
 Security and maintenance patches should be applied promptly rather than treating the initially selected patch version as fixed indefinitely.
 
@@ -38,9 +38,9 @@ The finalized relational design in `docs/DATABASE-DESIGN.md` will be implemented
 
 ### Application database access
 
-Application services will use Drizzle ORM with `node-postgres` (`pg`) against Neon's pooled PostgreSQL connection.
+Server-side application code will use Drizzle ORM with `node-postgres` (`pg`) against Neon's pooled PostgreSQL connection.
 
-This path is the default for application database access because Pipestry requires transaction-capable services for multi-statement operations that must be atomic.
+This path is the default for application database access because Pipestry requires transaction-capable database access for multi-statement operations that must be atomic.
 
 Where a domain operation requires multiple related reads or writes to succeed or fail together, it must execute inside an explicit database transaction.
 
