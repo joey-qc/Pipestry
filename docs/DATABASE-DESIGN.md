@@ -4,7 +4,7 @@
 
 This document defines the relational database design for Pipestry. It describes the Pipestry schema as designed; legacy migration mapping and provenance are separate concerns.
 
-Exact database-engine-specific types and DDL syntax will be chosen with the implementation stack. The types below describe the required data shape and constraints.
+The types below describe the required data shape and constraints. For PostgreSQL, all date/time columns are implemented as `timestamp with time zone` (`timestamptz`), represented in Drizzle as `timestamp(..., { withTimezone: true })`. Other database-engine-specific type and DDL details are implementation choices that must remain consistent with this design.
 
 ## Tables
 
